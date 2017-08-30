@@ -1,4 +1,4 @@
-package Capturador;
+package Captura;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,9 +71,13 @@ public class Captura {
 
             }//for
 
-            PcapIf device = alldevs.get(0); // We know we have atleast 1 device
-            System.out
-                    .printf("\nChoosing '%s' on your behalf:\n",
+            BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Elige un dispositivo:");
+
+            int disp=Integer.parseInt(br.readLine());
+
+            PcapIf device = alldevs.get(disp); // We know we have atleast 1 device
+            System.out.printf("\nChoosing '%s' on your behalf:\n",
                             (device.getDescription() != null) ? device.getDescription()
                                     : device.getName());
 
