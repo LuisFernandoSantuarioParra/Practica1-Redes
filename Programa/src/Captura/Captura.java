@@ -135,16 +135,21 @@ public class Captura {
                     }
                     System.out.println("\n\nEncabezado: "+ packet.toHexdump());
 
+
+
                     /*Trama a analizar*/
                     for(int i=0;i<packet.size();i++){
                       //  System.out.printf("%02X ",packet.getUByte(i));
-                        str.add(String.format("%02X", packet.getUByte(i)));
+                       // str.add(String.format("%02X", packet.getUByte(i)));
+                           str.add(String.format("%02X", packet.getUByte(i)));
 //                        if(i%16==15)
 //                            System.out.println("");
                     }
                     System.out.println("");
                     System.out.println("Trama a analizar:");
+                    int numero=(int)Long.parseLong(str.get(2), 16);
                     System.out.println(str);
+                    System.out.println(numero);
                     System.out.println("");
                 }
             };
@@ -158,7 +163,9 @@ public class Captura {
              * the loop method exists that allows the programmer to sepecify exactly
              * which protocol ID to use as the data link type for this pcap interface.
              **************************************************************************/
-            pcap.loop(10, jpacketHandler, "jNetPcap rocks!");
+//            pcap.loop(10, jpacketHandler, "jNetPcap rocks!");
+
+            pcap.loop(2, jpacketHandler, "jNetPcap rocks!");
 
             /***************************************************************************
              * Last thing to do is close the pcap handle
