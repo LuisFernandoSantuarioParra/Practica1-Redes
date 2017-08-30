@@ -150,6 +150,26 @@ public class Captura {
                     int numero=(int)Long.parseLong(str.get(2), 16);
                     System.out.println(str);
                     System.out.println(numero);
+
+                    String macOrigen= new String();
+                    String macDestino= new String();
+                    int posicion=0;
+
+
+                    for (int y = 0; y < 6; y++) {
+                            macOrigen = macOrigen + str.get(y);
+                        }
+                    for (int e = 6; e < 12; e++) {
+                            macDestino = macDestino + str.get(e);
+                        }
+
+
+
+                    System.out.println("Mac Origen:");
+                    System.out.println(macOrigen);
+                    System.out.println("");
+                    System.out.println("Mac Destino:");
+                    System.out.println(macDestino);
                     System.out.println("");
                 }
             };
