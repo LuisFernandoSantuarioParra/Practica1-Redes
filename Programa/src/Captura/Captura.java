@@ -139,7 +139,6 @@ public class Captura {
                     for(int i=0;i<packet.size();i++){
                       //  System.out.printf("%02X ",packet.getUByte(i));
                         str.add(String.format("%02X", packet.getUByte(i)));
-//
 //                        if(i%16==15)
 //                            System.out.println("");
                     }
