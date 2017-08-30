@@ -119,6 +119,7 @@ public class Captura {
             PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>() {
 
                 public void nextPacket(PcapPacket packet, String user) {
+
                     ArrayList<String> str = new ArrayList<String>();
 
                     System.out.printf("Received packet at %s caplen=%-4d len=%-4d %s\n",
@@ -145,15 +146,16 @@ public class Captura {
 //                        if(i%16==15)
 //                            System.out.println("");
                     }
+
                     System.out.println("");
                     System.out.println("Trama a analizar:");
                     int numero=(int)Long.parseLong(str.get(2), 16);
                     System.out.println(str);
-                    System.out.println(numero);
-
                     String macOrigen= new String();
                     String macDestino= new String();
-                    int posicion=0;
+                    String rfc=new String();
+                    String protocolo=new String();
+                    int tamaño=0;
 
 
                     for (int y = 0; y < 6; y++) {
@@ -162,15 +164,24 @@ public class Captura {
                     for (int e = 6; e < 12; e++) {
                             macDestino = macDestino + str.get(e);
                         }
-
-
-
+                    for (int z=12;z<14;z++){
+                        rfc=rfc+str.get(z);
+                    }
+                    for (int z=14;z<15;z++){
+                        protocolo=protocolo+str.get(z);
+                        tamaño=((Integer.parseInt(protocolo.substring(1)))*32)/8;
+                    }
+                    System.out.println("");
                     System.out.println("Mac Origen:");
                     System.out.println(macOrigen);
-                    System.out.println("");
                     System.out.println("Mac Destino:");
                     System.out.println(macDestino);
-                    System.out.println("");
+                    System.out.println("RFC");
+                    System.out.println(rfc);
+                    System.out.println("Protocolo");
+                    System.out.println(protocolo);
+                    System.out.println("Tamaño de encabezado");
+                    System.out.println(tamaño);
                 }
             };
 
@@ -185,7 +196,7 @@ public class Captura {
              **************************************************************************/
 //            pcap.loop(10, jpacketHandler, "jNetPcap rocks!");
 
-            pcap.loop(2, jpacketHandler, "jNetPcap rocks!");
+            pcap.loop(10, jpacketHandler, "jNetPcap rocks!");
 
             /***************************************************************************
              * Last thing to do is close the pcap handle
