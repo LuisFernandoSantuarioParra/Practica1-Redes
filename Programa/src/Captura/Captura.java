@@ -119,6 +119,7 @@ public class Captura {
             PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>() {
 
                 public void nextPacket(PcapPacket packet, String user) {
+                    ArrayList<String> str = new ArrayList<String>();
 
                     System.out.printf("Received packet at %s caplen=%-4d len=%-4d %s\n",
                             new Date(packet.getCaptureHeader().timestampInMillis()),
@@ -134,7 +135,18 @@ public class Captura {
                     }
                     System.out.println("\n\nEncabezado: "+ packet.toHexdump());
 
-
+                    /*Trama a analizar*/
+                    for(int i=0;i<packet.size();i++){
+                      //  System.out.printf("%02X ",packet.getUByte(i));
+                        str.add(String.format("%02X", packet.getUByte(i)));
+//
+//                        if(i%16==15)
+//                            System.out.println("");
+                    }
+                    System.out.println("");
+                    System.out.println("Trama a analizar:");
+                    System.out.println(str);
+                    System.out.println("");
                 }
             };
 
