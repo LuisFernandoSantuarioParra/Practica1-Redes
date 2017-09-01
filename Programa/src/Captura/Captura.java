@@ -1,10 +1,12 @@
 package Captura;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.io.*;
 
+import com.sun.xml.internal.ws.commons.xmlutil.Converter;
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
 import org.jnetpcap.packet.PcapPacket;
@@ -18,6 +20,9 @@ import org.jnetpcap.packet.Payload;
 import org.jnetpcap.protocol.network.Arp;
 import org.jnetpcap.protocol.lan.IEEE802dot2;
 import org.jnetpcap.protocol.lan.IEEE802dot3;
+
+import javax.xml.bind.DatatypeConverter;
+import javax.xml.crypto.Data;
 
 
 public class Captura {
@@ -154,12 +159,20 @@ public class Captura {
                     String macOrigen= new String();
                     String macDestino= new String();
                     String rfc=new String();
-                    String protocolo=new String();
+                    String cabecera=new String();
+
                     int tamaño=0;
                     String ipO=new String();
                     String ipD=new String();
+                    String byteVacio="00";
+                    String protocolo= new String();
+                    String longitudC=new String();
+                    String pduTransporte= new String();
+                    String pseudoEncabezado=new String();
+
                     int longitud=0;
                     int longitudTotal=0;
+
 
 
                     for (int y = 0; y < 6; y++) {
@@ -172,40 +185,64 @@ public class Captura {
                         rfc=rfc+str.get(z);
                     }
                     for (int z=14;z<15;z++){
-                        protocolo=protocolo+str.get(z);
-                        tamaño=((Integer.parseInt(protocolo.substring(1)))*32)/8;
+                        cabecera=cabecera+str.get(z);
+                        cabecera=cabecera.substring(1);
+                        tamaño=(((int)Long.parseLong(cabecera, 16))*32)/8;
                     }
                     for(int z=26; z<30;z++){
-                        ipO=ipO+str.get(z);
+                        ipO=ipO+str.get(z)+",";
                     }
                     for(int z=30; z<34;z++){
-                        ipD=ipD+str.get(z);
+                        ipD=ipD+str.get(z)+",";
                     }
 
                     for(int z=16; z<18;z++){
-                        longitud=(int)Long.parseLong(str.get(z), 16);
-                    }
-                    longitudTotal=str.size();
-                    System.out.println("");
-                    System.out.println("Mac Origen:");
-                    System.out.println(macOrigen);
-                    System.out.println("Mac Destino:");
-                    System.out.println(macDestino);
-                    System.out.println("RFC");
-                    System.out.println(rfc);
-                    System.out.println("Protocolo");
-                    System.out.println(protocolo);
-                    System.out.println("Tamaño de encabezado");
-                    System.out.println(tamaño);
-                    System.out.println("IP Origen");
-                    System.out.println(ipO);
-                    System.out.println("IP Destino");
-                    System.out.println(ipD);
-                    System.out.println("Longitud");
-                    System.out.println(longitud);
+                        longitud=longitud+(int)Long.parseLong(str.get(z), 16);
 
-                    System.out.println("LongitudTotal");
-                    System.out.println(longitudTotal);
+                        longitudC =String.format("%X00", (longitud-tamaño));
+
+                    }
+
+                    for(int z=(14+tamaño);z<(longitud-tamaño);z++){
+                        pduTransporte=pduTransporte+","+str.get(z);
+
+                    }
+                    protocolo=str.get(23);
+
+                    pseudoEncabezado=ipO+ipD+byteVacio+","+protocolo+","+longitudC.substring(0,2)+","+longitudC.substring(2)+pduTransporte;
+
+//                    longitudTotal=str.size();
+//                    System.out.println("");
+//                    System.out.println("Mac Origen:");
+//                    System.out.println(macOrigen);
+//                    System.out.println("Mac Destino:");
+//                    System.out.println(macDestino);
+//                    System.out.println("RFC");
+//                    System.out.println(rfc);
+//                    System.out.println("Protocolo");
+//                    System.out.println(protocolo);
+//                    System.out.println("Tamaño de encabezado");
+//                    System.out.println(tamaño);
+//                    System.out.println("IP Origen");
+//                    System.out.println(ipO);
+//                    System.out.println("IP Destino");
+//                    System.out.println(ipD);
+//                    System.out.println("Longitud");
+//                    System.out.println(longitud);
+//                    System.out.println(longitudC);
+//
+//                    System.out.println("LongitudTotal");
+//                    System.out.println(longitudTotal);
+//
+//                    System.out.println("PDU Transporte");
+//                    System.out.println(pduTransporte);
+
+                    /*Transformar pseudo encabezado*/
+                    String[] temporal= pseudoEncabezado.split(",");
+
+                    System.out.println("PseudoEncabezado");
+                    System.out.println(pseudoEncabezado);
+                    System.out.println(Arrays.toString(temporal));
                 }
             };
 
@@ -220,7 +257,7 @@ public class Captura {
              **************************************************************************/
 //            pcap.loop(10, jpacketHandler, "jNetPcap rocks!");
 
-            pcap.loop(10, jpacketHandler, "jNetPcap rocks!");
+            pcap.loop(5, jpacketHandler, "jNetPcap rocks!");
 
             /***************************************************************************
              * Last thing to do is close the pcap handle
