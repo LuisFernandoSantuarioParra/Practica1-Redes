@@ -156,6 +156,10 @@ public class Captura {
                     String rfc=new String();
                     String protocolo=new String();
                     int tamaño=0;
+                    String ipO=new String();
+                    String ipD=new String();
+                    int longitud=0;
+                    int longitudTotal=0;
 
 
                     for (int y = 0; y < 6; y++) {
@@ -171,6 +175,17 @@ public class Captura {
                         protocolo=protocolo+str.get(z);
                         tamaño=((Integer.parseInt(protocolo.substring(1)))*32)/8;
                     }
+                    for(int z=26; z<30;z++){
+                        ipO=ipO+str.get(z);
+                    }
+                    for(int z=30; z<34;z++){
+                        ipD=ipD+str.get(z);
+                    }
+
+                    for(int z=16; z<18;z++){
+                        longitud=(int)Long.parseLong(str.get(z), 16);
+                    }
+                    longitudTotal=str.size();
                     System.out.println("");
                     System.out.println("Mac Origen:");
                     System.out.println(macOrigen);
@@ -182,6 +197,15 @@ public class Captura {
                     System.out.println(protocolo);
                     System.out.println("Tamaño de encabezado");
                     System.out.println(tamaño);
+                    System.out.println("IP Origen");
+                    System.out.println(ipO);
+                    System.out.println("IP Destino");
+                    System.out.println(ipD);
+                    System.out.println("Longitud");
+                    System.out.println(longitud);
+
+                    System.out.println("LongitudTotal");
+                    System.out.println(longitudTotal);
                 }
             };
 
