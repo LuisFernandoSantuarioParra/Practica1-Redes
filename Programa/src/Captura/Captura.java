@@ -1,5 +1,8 @@
 package Captura;
 
+import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,6 +25,7 @@ import org.jnetpcap.protocol.lan.IEEE802dot2;
 import org.jnetpcap.protocol.lan.IEEE802dot3;
 
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import javax.xml.crypto.Data;
 
 
@@ -106,7 +110,7 @@ public class Captura {
 
             /********F I L T R O********/
             PcapBpfProgram filter = new PcapBpfProgram();
-            String expression =""; // "port 80";
+            String expression ="ip"; // "port 80";
             int optimize = 0; // 1 means true, 0 means false
             int netmask = 0;
             int r2 = pcap.compile(filter, expression, optimize, netmask);
@@ -147,7 +151,7 @@ public class Captura {
                     for(int i=0;i<packet.size();i++){
                       //  System.out.printf("%02X ",packet.getUByte(i));
                        // str.add(String.format("%02X", packet.getUByte(i)));
-                           str.add(String.format("%02X", packet.getUByte(i)));
+                           str.add(String.format("%02x", packet.getUByte(i)));
 //                        if(i%16==15)
 //                            System.out.println("");
                     }
@@ -211,7 +215,7 @@ public class Captura {
 
                     pseudoEncabezado=ipO+ipD+byteVacio+","+protocolo+","+longitudC.substring(0,2)+","+longitudC.substring(2)+pduTransporte;
 
-//                    longitudTotal=str.size();
+                    //                   longitudTotal=str.size();
 //                    System.out.println("");
 //                    System.out.println("Mac Origen:");
 //                    System.out.println(macOrigen);
@@ -227,9 +231,9 @@ public class Captura {
 //                    System.out.println(ipO);
 //                    System.out.println("IP Destino");
 //                    System.out.println(ipD);
-//                    System.out.println("Longitud");
-//                    System.out.println(longitud);
-//                    System.out.println(longitudC);
+                    System.out.println("Longitud");
+                    System.out.println(longitud);
+                    System.out.println(longitudC);
 //
 //                    System.out.println("LongitudTotal");
 //                    System.out.println(longitudTotal);
@@ -240,9 +244,30 @@ public class Captura {
                     /*Transformar pseudo encabezado*/
                     String[] temporal= pseudoEncabezado.split(",");
 
+                    byte b[] = new byte[temporal.length];
+
+                    for (int i = 0; i < temporal.length; i++) {
+                        b[i] = (byte)(int)Long.parseLong(temporal[i], 16);
+                    }
+
+                    HexBinaryAdapter adapter = new HexBinaryAdapter();
+
+                    byte[] bytes=new byte[temporal.length];
+                    for (int i=0; i<temporal.length; i++) {
+                        //bytes[i] = Byte.parseByte(temporal[i],16);
+                        bytes =  new BigInteger(temporal[i], 16).toByteArray();
+                    }
+
+
                     System.out.println("PseudoEncabezado");
                     System.out.println(pseudoEncabezado);
                     System.out.println(Arrays.toString(temporal));
+                    System.out.println(Arrays.toString(b));
+                    System.out.println(Arrays.toString(bytes));
+                    Checksum chek=new Checksum();
+
+                    long resultado = chek.calculateChecksum(b);
+                    System.out.printf("Valores del check: %02X\n",resultado);
                 }
             };
 
