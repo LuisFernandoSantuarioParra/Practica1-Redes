@@ -164,7 +164,6 @@ public class Captura {
                     String macDestino= new String();
                     String rfc=new String();
                     String cabecera=new String();
-
                     int tamaño=0;
                     String ipO=new String();
                     String ipD=new String();
@@ -173,7 +172,7 @@ public class Captura {
                     String longitudC=new String();
                     String pduTransporte= new String();
                     String pseudoEncabezado=new String();
-
+                    String longi=new String();
                     int longitud=0;
                     int longitudTotal=0;
 
@@ -201,13 +200,14 @@ public class Captura {
                     }
 
                     for(int z=16; z<18;z++){
+                         longi=longi+str.get(z);
                         longitud=longitud+(int)Long.parseLong(str.get(z), 16);
 
                         longitudC =String.format("%x00", (longitud-tamaño));
 
                     }
 
-                    for(int z=(14+tamaño);z<=(longitud-tamaño);z++){
+                    for(int z=(14+tamaño);z<(longitud-tamaño)+(14+tamaño);z++){
                         pduTransporte=pduTransporte+str.get(z);
 
                     }
@@ -219,32 +219,11 @@ public class Captura {
 
                     }
 
-//                    int t_trama=longitud-tamaño;
-//                    byte[] buf=new byte[t_trama+12];
-//
-//                    for (int i=0;i<4;i++){
-//                       buf[i]= (byte) packet.getUByte(29+i);
-//                       buf[i+4]= (byte) packet.getUByte(33+i);
-//                    }
-//                    buf[9]=0x00;
-//                    buf[10]=(byte) packet.getUByte(24);
-
-
-//                    for(int i=0;i<packet.size();i++){
-//                        //  System.out.printf("%02X ",packet.getUByte(i));
-//                        // str.add(String.format("%02X", packet.getUByte(i)));
-//                       buf[i]= (byte) packet.getUByte(i);
-////                        if(i%16==15)
-////                            System.out.println("");
-//                    }
-
-
-
                     protocolo=str.get(23);
 
-                    pseudoEncabezado=ipO+ipD+byteVacio+protocolo+longitudC.substring(0,2)+longitudC.substring(2)+pduTransporte;
+                    pseudoEncabezado=ipO+ipD+byteVacio+protocolo+longitudC.substring(2)+longitudC.substring(0,2)+pduTransporte;
 
-                                       longitudTotal=str.size();
+                    longitudTotal=str.size();
                     System.out.println("");
                     System.out.println("Mac Origen:");
                     System.out.println(macOrigen);
@@ -261,10 +240,13 @@ public class Captura {
                     System.out.println("IP Destino");
                     System.out.println(ipD);
                     System.out.println("Longitud");
+                    System.out.println(longi);
                     System.out.println(longitud);
                     System.out.println("Longitud-tam");
                     System.out.println(longitud-tamaño);
+                    System.out.println("14bytes + tamaño del encabezado");
                     System.out.println(14+tamaño);
+                    System.out.println("Longitud calculada");
                     System.out.println(longitudC);
 
                     System.out.println("LongitudTotal");
@@ -273,22 +255,6 @@ public class Captura {
                     System.out.println("PDU Transporte");
                     System.out.println(pduTransporte);
 
-                    /*Transformar pseudo encabezado*/
-//                    String temporal= pseudoEncabezado.split(",");
-//
-//                    byte b[] = new byte[temporal.length];
-//
-//                    for (int i = 0; i < temporal.length; i++) {
-//                        b[i] = (byte)(int)Long.parseLong(temporal[i], 16);
-//                    }
-//
-//                    HexBinaryAdapter adapter = new HexBinaryAdapter();
-//
-//                    byte[] bytes=new byte[temporal.length];
-//                    for (int i=0; i<temporal.length; i++) {
-//                        //bytes[i] = Byte.parseByte(temporal[i],16);
-//                        bytes =  new BigInteger(temporal[i], 16).toByteArray();
-//                    }
 
                     HexBinaryAdapter adapter = new HexBinaryAdapter();
                     byte[] bytes = adapter.unmarshal(pseudoEncabezado);
@@ -304,8 +270,11 @@ public class Captura {
                     System.out.println(Arrays.toString(checkS));
                     Checksum chek=new Checksum();
 
-                    long resultado = chek.calculateChecksum(checkS);
-                    System.out.printf("Valores del check: %02X\n",resultado);
+                    long resultado = chek.calculateChecksum(bytes);
+                    System.out.printf("Valores del check UDP/TCP: %02X\n",resultado);
+
+                    long resultadoS = chek.calculateChecksum(checkS);
+                    System.out.printf("Valores del check IP: %02X\n",resultadoS);
                 }
             };
 
